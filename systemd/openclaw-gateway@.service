@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenClaw Gateway (%i)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/opt/openclaws/pkg/bin/run_gateway_instance.sh %i
+Restart=on-failure
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
+
