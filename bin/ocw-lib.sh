@@ -40,7 +40,11 @@ read_gateway_token(){
 const fs=require("fs");
 const p=process.argv[1];
 const j=JSON.parse(fs.readFileSync(p,"utf8"));
-process.stdout.write(j?.gateway?.auth?.token || "");
+let token="";
+if (j && j.gateway && j.gateway.auth && typeof j.gateway.auth.token === "string") {
+  token = j.gateway.auth.token;
+}
+process.stdout.write(token || "");
 ' "$cfg"
 }
 
