@@ -49,6 +49,17 @@ Install + service templates:
 ./install.sh --install-service-template
 ```
 
+If `openclaw` CLI is missing, installer can prompt to install it,
+or you can force non-interactive install:
+```bash
+./install.sh --install-openclaw-if-missing
+```
+
+Install a specific OpenClaw version:
+```bash
+./install.sh --install-openclaw-if-missing --openclaw-version 0.6.3
+```
+
 Install + create/start gateway/node in one shot:
 ```bash
 ./install.sh \

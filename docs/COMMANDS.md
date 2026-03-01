@@ -31,6 +31,8 @@ What it does:
 Key options:
 - `--install-dir <path>` (default `/opt/openclaws`)
 - `--install-service-template`
+- `--install-openclaw-if-missing`
+- `--openclaw-version <ver>`
 - `--gateway-name <name>`
 - `--gateway-port <port>`
 - `--gateway-bind <mode>`

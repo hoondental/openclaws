@@ -12,6 +12,8 @@ set -euo pipefail
 #   --gateway-name <name> --gateway-port <port> [--gateway-bind <mode>] [--gateway-model <provider/model>]
 #   --node-name <name>          (requires --gateway-name)
 #   --start                     start created services
+#   --install-openclaw-if-missing  auto-install openclaw CLI when missing
+#   --openclaw-version <ver>    install specific openclaw version (default: latest)
 #
 # Example:
 #   ./install.sh --install-service-template \
@@ -20,6 +22,8 @@ set -euo pipefail
 INSTALL_DIR="/opt/openclaws"
 INSTALL_SERVICE_TEMPLATE=0
 START_AFTER=0
+INSTALL_OPENCLAW_IF_MISSING=0
+OPENCLAW_VERSION=""
 
 GW_NAME=""
 GW_PORT=""
@@ -42,12 +46,59 @@ while [[ $# -gt 0 ]]; do
     --gateway-model) GW_MODEL="${2:-}"; shift 2;;
     --node-name) NODE_NAME="${2:-}"; shift 2;;
     --start) START_AFTER=1; shift;;
+    --install-openclaw-if-missing) INSTALL_OPENCLAW_IF_MISSING=1; shift;;
+    --openclaw-version) OPENCLAW_VERSION="${2:-}"; shift 2;;
     -h|--help) usage; exit 0;;
     *) die "Unknown arg: $1";;
   esac
 done
 
 need rsync
+
+install_openclaw_cli(){
+  need npm
+  local spec="openclaw"
+  if [[ -n "$OPENCLAW_VERSION" ]]; then
+    spec="openclaw@${OPENCLAW_VERSION}"
+  fi
+
+  echo "[*] Installing ${spec} ..."
+  # Prefer global install first; fallback to user prefix if permission denied.
+  if npm install -g "$spec"; then
+    return 0
+  fi
+
+  echo "[!] Global npm install failed. Trying user-level npm prefix..."
+  npm config set prefix "$HOME/.local" >/dev/null 2>&1 || true
+  npm install -g "$spec"
+  export PATH="$HOME/.local/bin:$PATH"
+}
+
+ensure_openclaw_cli(){
+  if command -v openclaw >/dev/null 2>&1; then
+    return 0
+  fi
+
+  if [[ $INSTALL_OPENCLAW_IF_MISSING -eq 1 ]]; then
+    install_openclaw_cli
+    command -v openclaw >/dev/null 2>&1 || die "openclaw install attempted but command still not found"
+    return 0
+  fi
+
+  if [[ -t 0 ]]; then
+    echo "[!] 'openclaw' command not found."
+    read -r -p "Install openclaw CLI now? [y/N] " ans
+    if [[ "$ans" =~ ^[Yy]$ ]]; then
+      install_openclaw_cli
+      command -v openclaw >/dev/null 2>&1 || die "openclaw install attempted but command still not found"
+      return 0
+    fi
+  fi
+
+  die "'openclaw' is required. Install it first (or rerun with --install-openclaw-if-missing)."
+}
+
+ensure_openclaw_cli
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_ROOT="$SCRIPT_DIR"
