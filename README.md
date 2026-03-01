@@ -55,6 +55,15 @@ or you can force non-interactive install:
 ./install.sh --install-openclaw-if-missing
 ```
 
+When openclaw is found/installed, installer also:
+- appends npm global bin PATH to `~/.bashrc` if needed
+- runs `source ~/.bashrc` in installer process (best effort)
+
+If your current terminal still doesn't see `openclaw`, run:
+```bash
+source ~/.bashrc
+```
+
 Default OpenClaw install target version: **2026.2.26**
 (you can override with `--openclaw-version`)
 

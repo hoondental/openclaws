@@ -76,6 +76,33 @@ run_env_precheck(){
   fi
 }
 
+OPENCLAW_BIN_DIR=""
+
+persist_path_in_bashrc(){
+  local d="$1"
+  [[ -n "$d" ]] || return 0
+  [[ -d "$d" ]] || return 0
+
+  local line="export PATH=\"$d:\$PATH\""
+  local bashrc="$HOME/.bashrc"
+
+  touch "$bashrc"
+  if ! grep -Fq "$line" "$bashrc"; then
+    echo "$line" >> "$bashrc"
+    echo "[*] Added PATH entry to $bashrc: $d"
+  fi
+
+  # apply for current shell too
+  case ":$PATH:" in
+    *":$d:"*) ;;
+    *) export PATH="$d:$PATH" ;;
+  esac
+
+  # best effort source (affects this script process); user shell may still require new terminal/source.
+  # shellcheck disable=SC1090
+  source "$bashrc" >/dev/null 2>&1 || true
+}
+
 install_openclaw_cli(){
   need npm
   local spec="openclaw"
@@ -89,6 +116,7 @@ install_openclaw_cli(){
     if [[ -n "$gprefix" && "$gprefix" != "undefined" && "$gprefix" != "null" ]]; then
       gbin="$gprefix/bin"
       if [[ -d "$gbin" ]]; then
+        OPENCLAW_BIN_DIR="$gbin"
         case ":$PATH:" in
           *":$gbin:"*) ;;
           *) export PATH="$gbin:$PATH" ;;
@@ -139,6 +167,8 @@ install_openclaw_cli(){
 
 ensure_openclaw_cli(){
   if command -v openclaw >/dev/null 2>&1; then
+    OPENCLAW_BIN_DIR="$(dirname "$(command -v openclaw)")"
+    persist_path_in_bashrc "$OPENCLAW_BIN_DIR"
     return 0
   fi
 
@@ -149,6 +179,10 @@ ensure_openclaw_cli(){
       echo "[!] PATH: $PATH"
       die "openclaw install attempted but command still not found (PATH issue likely)"
     fi
+    if [[ -z "$OPENCLAW_BIN_DIR" ]]; then
+      OPENCLAW_BIN_DIR="$(dirname "$(command -v openclaw)")"
+    fi
+    persist_path_in_bashrc "$OPENCLAW_BIN_DIR"
     return 0
   fi
 
