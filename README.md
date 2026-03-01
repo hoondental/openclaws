@@ -25,6 +25,21 @@ Use `install.sh` to deploy scripts into a target install dir.
 
 Default install dir is `/opt/openclaws`.
 
+### Permission note (important)
+If `/opt/openclaws` is not writable, **do not run `sudo ./install.sh` directly**.
+
+Recommended flow:
+```bash
+sudo mkdir -p /opt/openclaws
+sudo chown -R $USER:$USER /opt/openclaws
+./install.sh
+```
+
+Alternative (no sudo):
+```bash
+./install.sh --install-dir "$HOME/openclaws"
+```
+
 ```bash
 ./install.sh
 ```
