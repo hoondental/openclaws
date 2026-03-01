@@ -33,6 +33,7 @@ Key options:
 - `--install-service-template`
 - `--install-openclaw-if-missing`
 - `--openclaw-version <ver>`
+- `--skip-env-check`
 - `--gateway-name <name>`
 - `--gateway-port <port>`
 - `--gateway-bind <mode>`

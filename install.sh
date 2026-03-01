@@ -14,6 +14,7 @@ set -euo pipefail
 #   --start                     start created services
 #   --install-openclaw-if-missing  auto-install openclaw CLI when missing
 #   --openclaw-version <ver>    install specific openclaw version (default: 2026.2.26)
+#   --skip-env-check            skip scripts/verify_env.sh precheck
 #
 # Example:
 #   ./install.sh --install-service-template \
@@ -24,6 +25,7 @@ INSTALL_SERVICE_TEMPLATE=0
 START_AFTER=0
 INSTALL_OPENCLAW_IF_MISSING=0
 OPENCLAW_VERSION="2026.2.26"
+SKIP_ENV_CHECK=0
 
 GW_NAME=""
 GW_PORT=""
@@ -48,6 +50,7 @@ while [[ $# -gt 0 ]]; do
     --start) START_AFTER=1; shift;;
     --install-openclaw-if-missing) INSTALL_OPENCLAW_IF_MISSING=1; shift;;
     --openclaw-version) OPENCLAW_VERSION="${2:-}"; shift 2;;
+    --skip-env-check) SKIP_ENV_CHECK=1; shift;;
     -h|--help) usage; exit 0;;
     *) die "Unknown arg: $1";;
   esac
@@ -57,6 +60,21 @@ need rsync
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_ROOT="$SCRIPT_DIR"
+
+run_env_precheck(){
+  local checker="$SRC_ROOT/scripts/verify_env.sh"
+  if [[ $SKIP_ENV_CHECK -eq 1 ]]; then
+    echo "[!] Skipping environment precheck (--skip-env-check)"
+    return 0
+  fi
+
+  if [[ -x "$checker" ]]; then
+    echo "[*] Running environment precheck..."
+    "$checker" || die "environment precheck failed (run ./scripts/prereq_ubuntu.sh first)"
+  else
+    echo "[!] verify_env.sh not found/executable; continuing without precheck"
+  fi
+}
 
 install_openclaw_cli(){
   need npm
@@ -147,6 +165,7 @@ ensure_openclaw_cli(){
   die "'openclaw' is required. Install it first (or rerun with --install-openclaw-if-missing)."
 }
 
+run_env_precheck
 ensure_openclaw_cli
 
 mkdir -p "$INSTALL_DIR"

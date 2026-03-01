@@ -77,12 +77,19 @@ See detailed docs:
 - `docs/COMMANDS.md`
 - `docs/SERVICES.md`
 - `docs/TELEGRAM_SETUP.md`
+- `docs/PREREQUISITES.md`
 
 ## New VM quick bootstrap (recommended)
 ```bash
 ./scripts/prereq_ubuntu.sh
 ./scripts/verify_env.sh
 ./install.sh --install-openclaw-if-missing
+```
+
+`install.sh` automatically runs environment precheck (`scripts/verify_env.sh`).
+If you must bypass it (not recommended):
+```bash
+./install.sh --skip-env-check
 ```
 
 ## Create gateway
