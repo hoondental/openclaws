@@ -13,6 +13,40 @@ So gateway/node working dirs are created under:
 
 ---
 
+## Installer
+
+### `install.sh`
+Deploys this repo's operational files into a target install directory.
+
+Default target install dir:
+- `/opt/openclaws`
+
+What it does:
+1. copies `bin/` and `systemd/` into install dir
+2. sets executable permission on scripts
+3. patches systemd unit `ExecStart` path to the chosen install dir
+4. optional: installs user service templates
+5. optional: creates gateway/node and starts services
+
+Key options:
+- `--install-dir <path>` (default `/opt/openclaws`)
+- `--install-service-template`
+- `--gateway-name <name>`
+- `--gateway-port <port>`
+- `--gateway-bind <mode>`
+- `--gateway-model <provider/model>`
+- `--node-name <name>`
+- `--start`
+
+Examples:
+```bash
+./install.sh
+./install.sh --install-dir /opt/openclaws --install-service-template
+./install.sh --install-service-template --gateway-name gw_chatgpt --gateway-port 21100 --node-name gw_chatgpt-1 --start
+```
+
+---
+
 ## Creation scripts
 
 ### `create_gateway.sh`
