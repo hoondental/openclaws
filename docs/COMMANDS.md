@@ -41,7 +41,7 @@ Key options:
 - `--start`
 
 Version behavior:
-- installer default target version is `0.6.3`
+- installer default target version is `2026.2.26`
 - if `--openclaw-version` is provided, that value overrides default
 
 Examples:

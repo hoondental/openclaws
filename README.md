@@ -55,12 +55,12 @@ or you can force non-interactive install:
 ./install.sh --install-openclaw-if-missing
 ```
 
-Default OpenClaw install target version: **0.6.3**
+Default OpenClaw install target version: **2026.2.26**
 (you can override with `--openclaw-version`)
 
 Install a specific OpenClaw version explicitly:
 ```bash
-./install.sh --install-openclaw-if-missing --openclaw-version 0.6.3
+./install.sh --install-openclaw-if-missing --openclaw-version 2026.2.26
 ```
 
 Install + create/start gateway/node in one shot:

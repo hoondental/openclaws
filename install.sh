@@ -13,7 +13,7 @@ set -euo pipefail
 #   --node-name <name>          (requires --gateway-name)
 #   --start                     start created services
 #   --install-openclaw-if-missing  auto-install openclaw CLI when missing
-#   --openclaw-version <ver>    install specific openclaw version (default: 0.6.3)
+#   --openclaw-version <ver>    install specific openclaw version (default: 2026.2.26)
 #
 # Example:
 #   ./install.sh --install-service-template \
@@ -23,7 +23,7 @@ INSTALL_DIR="/opt/openclaws"
 INSTALL_SERVICE_TEMPLATE=0
 START_AFTER=0
 INSTALL_OPENCLAW_IF_MISSING=0
-OPENCLAW_VERSION="0.6.3"
+OPENCLAW_VERSION="2026.2.26"
 
 GW_NAME=""
 GW_PORT=""
@@ -73,8 +73,21 @@ install_openclaw_cli(){
 
   echo "[!] Global npm install failed. Trying user-level npm prefix..."
   npm config set prefix "$HOME/.local" >/dev/null 2>&1 || true
-  npm install -g "$spec"
-  export PATH="$HOME/.local/bin:$PATH"
+  if npm install -g "$spec"; then
+    export PATH="$HOME/.local/bin:$PATH"
+    return 0
+  fi
+
+  # If pinned version is missing on npm, fallback to latest.
+  if [[ -n "$OPENCLAW_VERSION" ]]; then
+    echo "[!] Requested openclaw@${OPENCLAW_VERSION} not installable. Falling back to latest 'openclaw'."
+    if npm install -g openclaw; then
+      export PATH="$HOME/.local/bin:$PATH"
+      return 0
+    fi
+  fi
+
+  die "Failed to install openclaw CLI via npm"
 }
 
 ensure_openclaw_cli(){
