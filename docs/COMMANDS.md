@@ -97,6 +97,14 @@ Example:
 ### `run_gateway_instance.sh <gw_name>`
 Foreground process entrypoint for one gateway instance.
 
+`openclaw` binary resolution order:
+1. `OPENCLAW_CMD` (if set in env file)
+2. `command -v openclaw`
+3. `$HOME/.local/bin/openclaw`
+4. latest nvm path: `$HOME/.nvm/versions/node/*/bin/openclaw`
+5. `/usr/local/bin/openclaw`
+6. `/usr/bin/openclaw`
+
 Main actions:
 - loads `<runtime>/gateways/<name>/gateway.env`
 - reads gateway token from gateway `openclaw.json`
@@ -106,6 +114,8 @@ Main actions:
 
 ### `run_node_instance.sh <node_name>`
 Foreground process entrypoint for one node instance.
+
+Uses the same `openclaw` binary resolution order as gateway runner.
 
 Main actions:
 - loads `<runtime>/nodes/<name>/node.env`

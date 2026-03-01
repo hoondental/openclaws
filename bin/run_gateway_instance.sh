@@ -41,13 +41,21 @@ if [[ -z "$OPENCLAW_CMD" ]]; then
     OPENCLAW_CMD="$(command -v openclaw)"
   elif [[ -x "$HOME/.local/bin/openclaw" ]]; then
     OPENCLAW_CMD="$HOME/.local/bin/openclaw"
-  elif [[ -x "/usr/local/bin/openclaw" ]]; then
-    OPENCLAW_CMD="/usr/local/bin/openclaw"
-  elif [[ -x "/usr/bin/openclaw" ]]; then
-    OPENCLAW_CMD="/usr/bin/openclaw"
-  else
-    die "openclaw executable not found. Set OPENCLAW_CMD or fix PATH for systemd user service."
+  elif [[ -d "$HOME/.nvm/versions/node" ]]; then
+    NVM_CANDIDATE="$(ls -1d "$HOME"/.nvm/versions/node/*/bin/openclaw 2>/dev/null | sort -V | tail -n1 || true)"
+    if [[ -n "$NVM_CANDIDATE" && -x "$NVM_CANDIDATE" ]]; then
+      OPENCLAW_CMD="$NVM_CANDIDATE"
+    fi
   fi
+
+  if [[ -z "$OPENCLAW_CMD" && -x "/usr/local/bin/openclaw" ]]; then
+    OPENCLAW_CMD="/usr/local/bin/openclaw"
+  fi
+  if [[ -z "$OPENCLAW_CMD" && -x "/usr/bin/openclaw" ]]; then
+    OPENCLAW_CMD="/usr/bin/openclaw"
+  fi
+
+  [[ -n "$OPENCLAW_CMD" ]] || die "openclaw executable not found. Set OPENCLAW_CMD or fix PATH for systemd user service."
 fi
 
 exec "$OPENCLAW_CMD" gateway run \
