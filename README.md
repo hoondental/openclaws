@@ -86,6 +86,7 @@ See detailed docs:
 - `docs/COMMANDS.md`
 - `docs/SERVICES.md`
 - `docs/TELEGRAM_SETUP.md`
+- `docs/OPENAI_CODEX_SETUP.md`
 - `docs/PREREQUISITES.md`
 
 ## New VM quick bootstrap (recommended)
