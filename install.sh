@@ -13,7 +13,7 @@ set -euo pipefail
 #   --node-name <name>          (requires --gateway-name)
 #   --start                     start created services
 #   --install-openclaw-if-missing  auto-install openclaw CLI when missing
-#   --openclaw-version <ver>    install specific openclaw version (default: latest)
+#   --openclaw-version <ver>    install specific openclaw version (default: 0.6.3)
 #
 # Example:
 #   ./install.sh --install-service-template \
@@ -23,8 +23,7 @@ INSTALL_DIR="/opt/openclaws"
 INSTALL_SERVICE_TEMPLATE=0
 START_AFTER=0
 INSTALL_OPENCLAW_IF_MISSING=0
-OPENCLAW_VERSION=""
-DEFAULT_OPENCLAW_VERSION_FILE=".openclaw-version"
+OPENCLAW_VERSION="0.6.3"
 
 GW_NAME=""
 GW_PORT=""
@@ -59,23 +58,8 @@ need rsync
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_ROOT="$SCRIPT_DIR"
 
-resolve_openclaw_version(){
-  if [[ -n "$OPENCLAW_VERSION" ]]; then
-    return 0
-  fi
-  local vf="$SRC_ROOT/$DEFAULT_OPENCLAW_VERSION_FILE"
-  if [[ -f "$vf" ]]; then
-    local v
-    v="$(tr -d '[:space:]' < "$vf" || true)"
-    if [[ -n "$v" ]]; then
-      OPENCLAW_VERSION="$v"
-    fi
-  fi
-}
-
 install_openclaw_cli(){
   need npm
-  resolve_openclaw_version
   local spec="openclaw"
   if [[ -n "$OPENCLAW_VERSION" ]]; then
     spec="openclaw@${OPENCLAW_VERSION}"
