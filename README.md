@@ -58,6 +58,7 @@ or you can force non-interactive install:
 When openclaw is found/installed, installer also:
 - appends npm global bin PATH to `~/.bashrc` if needed
 - runs `source ~/.bashrc` in installer process (best effort)
+- uses non-persistent npm fallback prefix (avoids breaking `nvm` via `~/.npmrc`)
 
 If your current terminal still doesn't see `openclaw`, run:
 ```bash

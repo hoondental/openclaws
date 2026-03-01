@@ -144,9 +144,10 @@ install_openclaw_cli(){
     return 0
   fi
 
-  echo "[!] Global npm install failed. Trying user-level npm prefix..."
-  npm config set prefix "$HOME/.local" >/dev/null 2>&1 || true
-  if npm install -g "$spec"; then
+  echo "[!] Global npm install failed. Trying user-level npm prefix (non-persistent)..."
+  # IMPORTANT: do not persist npm prefix in ~/.npmrc (breaks nvm).
+  if NPM_CONFIG_PREFIX="$HOME/.local" npm install -g "$spec"; then
+    OPENCLAW_BIN_DIR="$HOME/.local/bin"
     add_npm_global_bin_to_path
     export PATH="$HOME/.local/bin:$PATH"
     return 0
@@ -156,6 +157,11 @@ install_openclaw_cli(){
   if [[ -n "$OPENCLAW_VERSION" ]]; then
     echo "[!] Requested openclaw@${OPENCLAW_VERSION} not installable. Falling back to latest 'openclaw'."
     if npm install -g openclaw; then
+      add_npm_global_bin_to_path
+      return 0
+    fi
+    if NPM_CONFIG_PREFIX="$HOME/.local" npm install -g openclaw; then
+      OPENCLAW_BIN_DIR="$HOME/.local/bin"
       add_npm_global_bin_to_path
       export PATH="$HOME/.local/bin:$PATH"
       return 0
