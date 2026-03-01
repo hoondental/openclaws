@@ -4,8 +4,9 @@ OpenClaw local management scripts (gateway/node create/start/stop) with **code/r
 
 ## Layout
 - Code/package (this repo): `/opt/openclaws/pkg`
-  - `bin/`
-  - `systemd/`
+  - `bin/` (operational scripts)
+  - `systemd/` (user service templates)
+  - `docs/` (command + service details)
 - Runtime data (default): `${OPENCLAWS_HOME:-$HOME/openclaws}`
   - `gateways/<name>/...`
   - `nodes/<name>/...`
@@ -23,6 +24,10 @@ OpenClaw local management scripts (gateway/node create/start/stop) with **code/r
 ```bash
 /opt/openclaws/pkg/bin/install_systemd_user.sh
 ```
+
+See detailed docs:
+- `docs/COMMANDS.md`
+- `docs/SERVICES.md`
 
 ## Create gateway
 ```bash
