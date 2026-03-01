@@ -25,6 +25,12 @@ Optional node major override:
 Checks:
 - required commands exist (`git`, `rsync`, `node`, `npm`)
 - Node major version is >= 20
+- optional: `--check-openclaw` to verify `openclaw` command
+
+Example:
+```bash
+./scripts/verify_env.sh --check-openclaw
+```
 
 ## 3) install.sh integration
 `install.sh` now runs `scripts/verify_env.sh` automatically before install.

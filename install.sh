@@ -167,6 +167,7 @@ ensure_openclaw_cli(){
 
 run_env_precheck
 ensure_openclaw_cli
+"$SRC_ROOT/scripts/verify_env.sh" --check-openclaw || die "post-install env check failed"
 
 mkdir -p "$INSTALL_DIR"
 
