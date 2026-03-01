@@ -24,6 +24,7 @@ INSTALL_SERVICE_TEMPLATE=0
 START_AFTER=0
 INSTALL_OPENCLAW_IF_MISSING=0
 OPENCLAW_VERSION=""
+DEFAULT_OPENCLAW_VERSION_FILE=".openclaw-version"
 
 GW_NAME=""
 GW_PORT=""
@@ -55,8 +56,26 @@ done
 
 need rsync
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC_ROOT="$SCRIPT_DIR"
+
+resolve_openclaw_version(){
+  if [[ -n "$OPENCLAW_VERSION" ]]; then
+    return 0
+  fi
+  local vf="$SRC_ROOT/$DEFAULT_OPENCLAW_VERSION_FILE"
+  if [[ -f "$vf" ]]; then
+    local v
+    v="$(tr -d '[:space:]' < "$vf" || true)"
+    if [[ -n "$v" ]]; then
+      OPENCLAW_VERSION="$v"
+    fi
+  fi
+}
+
 install_openclaw_cli(){
   need npm
+  resolve_openclaw_version
   local spec="openclaw"
   if [[ -n "$OPENCLAW_VERSION" ]]; then
     spec="openclaw@${OPENCLAW_VERSION}"
@@ -99,9 +118,6 @@ ensure_openclaw_cli(){
 }
 
 ensure_openclaw_cli
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SRC_ROOT="$SCRIPT_DIR"
 
 mkdir -p "$INSTALL_DIR"
 

@@ -40,6 +40,11 @@ Key options:
 - `--node-name <name>`
 - `--start`
 
+Version pin behavior:
+- if `--openclaw-version` is provided, installer uses that version
+- otherwise installer reads `.openclaw-version` in repo root (if present)
+- if neither is set, installer uses latest
+
 Examples:
 ```bash
 ./install.sh

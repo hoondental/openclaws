@@ -55,7 +55,10 @@ or you can force non-interactive install:
 ./install.sh --install-openclaw-if-missing
 ```
 
-Install a specific OpenClaw version:
+Default OpenClaw version can be pinned in repo file:
+- `.openclaw-version` (currently used if `--openclaw-version` is not provided)
+
+Install a specific OpenClaw version explicitly:
 ```bash
 ./install.sh --install-openclaw-if-missing --openclaw-version 0.6.3
 ```
