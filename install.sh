@@ -65,15 +65,28 @@ install_openclaw_cli(){
     spec="openclaw@${OPENCLAW_VERSION}"
   fi
 
+  add_npm_global_bin_to_path(){
+    local gbin
+    gbin="$(npm bin -g 2>/dev/null || true)"
+    if [[ -n "$gbin" && -d "$gbin" ]]; then
+      case ":$PATH:" in
+        *":$gbin:"*) ;;
+        *) export PATH="$gbin:$PATH" ;;
+      esac
+    fi
+  }
+
   echo "[*] Installing ${spec} ..."
   # Prefer global install first; fallback to user prefix if permission denied.
   if npm install -g "$spec"; then
+    add_npm_global_bin_to_path
     return 0
   fi
 
   echo "[!] Global npm install failed. Trying user-level npm prefix..."
   npm config set prefix "$HOME/.local" >/dev/null 2>&1 || true
   if npm install -g "$spec"; then
+    add_npm_global_bin_to_path
     export PATH="$HOME/.local/bin:$PATH"
     return 0
   fi
@@ -82,6 +95,7 @@ install_openclaw_cli(){
   if [[ -n "$OPENCLAW_VERSION" ]]; then
     echo "[!] Requested openclaw@${OPENCLAW_VERSION} not installable. Falling back to latest 'openclaw'."
     if npm install -g openclaw; then
+      add_npm_global_bin_to_path
       export PATH="$HOME/.local/bin:$PATH"
       return 0
     fi
@@ -97,7 +111,10 @@ ensure_openclaw_cli(){
 
   if [[ $INSTALL_OPENCLAW_IF_MISSING -eq 1 ]]; then
     install_openclaw_cli
-    command -v openclaw >/dev/null 2>&1 || die "openclaw install attempted but command still not found"
+    if ! command -v openclaw >/dev/null 2>&1; then
+      echo "[!] npm global bin: $(npm bin -g 2>/dev/null || echo unknown)"
+      die "openclaw install attempted but command still not found (PATH issue likely)"
+    fi
     return 0
   fi
 
