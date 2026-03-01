@@ -47,6 +47,7 @@ Install + create/start gateway/node in one shot:
 See detailed docs:
 - `docs/COMMANDS.md`
 - `docs/SERVICES.md`
+- `docs/TELEGRAM_SETUP.md`
 
 ## Create gateway
 ```bash
