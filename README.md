@@ -89,6 +89,7 @@ See detailed docs:
 - `docs/TELEGRAM_SETUP.md`
 - `docs/OPENAI_CODEX_SETUP.md`
 - `docs/PREREQUISITES.md`
+- `docs/REAL_WORLD_TROUBLESHOOTING.md`
 
 ## New VM quick bootstrap (recommended)
 ```bash
