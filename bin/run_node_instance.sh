@@ -72,7 +72,22 @@ export OPENCLAW_LOG_DIR="$NODEDIR/logs"
 export OPENCLAW_RUN_DIR="$NODEDIR/run"
 ensure_dirs "$XDG_CONFIG_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME" "$OPENCLAW_LOG_DIR" "$OPENCLAW_RUN_DIR"
 
-exec openclaw node run \
+OPENCLAW_CMD="${OPENCLAW_CMD:-}"
+if [[ -z "$OPENCLAW_CMD" ]]; then
+  if command -v openclaw >/dev/null 2>&1; then
+    OPENCLAW_CMD="$(command -v openclaw)"
+  elif [[ -x "$HOME/.local/bin/openclaw" ]]; then
+    OPENCLAW_CMD="$HOME/.local/bin/openclaw"
+  elif [[ -x "/usr/local/bin/openclaw" ]]; then
+    OPENCLAW_CMD="/usr/local/bin/openclaw"
+  elif [[ -x "/usr/bin/openclaw" ]]; then
+    OPENCLAW_CMD="/usr/bin/openclaw"
+  else
+    die "openclaw executable not found. Set OPENCLAW_CMD or fix PATH for systemd user service."
+  fi
+fi
+
+exec "$OPENCLAW_CMD" node run \
   --host "$OPENCLAW_GATEWAY_HOST" \
   --port "$OPENCLAW_GATEWAY_PORT" \
   --display-name "$DISPLAY_NAME" \

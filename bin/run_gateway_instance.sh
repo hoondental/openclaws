@@ -35,7 +35,22 @@ export OPENCLAW_CONFIG_PATH="$CFG"
 
 ensure_dirs "$OPENCLAW_LOG_DIR" "$OPENCLAW_RUN_DIR"
 
-exec openclaw gateway run \
+OPENCLAW_CMD="${OPENCLAW_CMD:-}"
+if [[ -z "$OPENCLAW_CMD" ]]; then
+  if command -v openclaw >/dev/null 2>&1; then
+    OPENCLAW_CMD="$(command -v openclaw)"
+  elif [[ -x "$HOME/.local/bin/openclaw" ]]; then
+    OPENCLAW_CMD="$HOME/.local/bin/openclaw"
+  elif [[ -x "/usr/local/bin/openclaw" ]]; then
+    OPENCLAW_CMD="/usr/local/bin/openclaw"
+  elif [[ -x "/usr/bin/openclaw" ]]; then
+    OPENCLAW_CMD="/usr/bin/openclaw"
+  else
+    die "openclaw executable not found. Set OPENCLAW_CMD or fix PATH for systemd user service."
+  fi
+fi
+
+exec "$OPENCLAW_CMD" gateway run \
   --port "$OPENCLAW_GATEWAY_WS_PORT" \
   --token "$TOKEN" \
   --bind "$BIND" \
