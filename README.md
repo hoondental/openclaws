@@ -1,9 +1,9 @@
-# openclaws-pkg
+# openclaws
 
 OpenClaw local management scripts (gateway/node create/start/stop) with **code/runtime split**.
 
 ## Layout
-- Code/package (this repo): `/opt/openclaws/pkg`
+- Code/package (this repo checkout path can be anywhere)
   - `bin/` (operational scripts)
   - `systemd/` (user service templates)
   - `docs/` (command + service details)
@@ -20,9 +20,28 @@ OpenClaw local management scripts (gateway/node create/start/stop) with **code/r
 - `OPENCLAWS_HOME` (optional): runtime root override
   - default: `$HOME/openclaws`
 
-## Install user services
+## Install (recommended)
+Use `install.sh` to deploy scripts into a target install dir.
+
+Default install dir is `/opt/openclaws`.
+
 ```bash
-/opt/openclaws/pkg/bin/install_systemd_user.sh
+./install.sh
+```
+
+Install + service templates:
+```bash
+./install.sh --install-service-template
+```
+
+Install + create/start gateway/node in one shot:
+```bash
+./install.sh \
+  --install-service-template \
+  --gateway-name gw_chatgpt \
+  --gateway-port 21100 \
+  --node-name gw_chatgpt-1 \
+  --start
 ```
 
 See detailed docs:
