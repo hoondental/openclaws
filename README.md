@@ -78,6 +78,13 @@ See detailed docs:
 - `docs/SERVICES.md`
 - `docs/TELEGRAM_SETUP.md`
 
+## New VM quick bootstrap (recommended)
+```bash
+./scripts/prereq_ubuntu.sh
+./scripts/verify_env.sh
+./install.sh --install-openclaw-if-missing
+```
+
 ## Create gateway
 ```bash
 /opt/openclaws/pkg/bin/create_gateway.sh --name gw_chatgpt --ws-port 21100

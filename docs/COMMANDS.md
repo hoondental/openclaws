@@ -142,6 +142,17 @@ By default these use user-systemd service:
 
 ## Utility scripts
 
+### `scripts/prereq_ubuntu.sh`
+Installs baseline prerequisites on Ubuntu/Debian:
+- apt packages (`git`, `curl`, `rsync`, `build-essential`, ...)
+- `nvm`
+- Node.js 22 (default; change with `--node`)
+
+### `scripts/verify_env.sh`
+Checks required commands and Node major version (>=20).
+Use this before `install.sh` in new VM provisioning.
+
+
 ### `install_systemd_user.sh`
 Installs service unit templates from `pkg/systemd` to:
 - `~/.config/systemd/user`
