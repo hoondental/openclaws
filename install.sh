@@ -66,14 +66,29 @@ install_openclaw_cli(){
   fi
 
   add_npm_global_bin_to_path(){
-    local gbin
-    gbin="$(npm bin -g 2>/dev/null || true)"
-    if [[ -n "$gbin" && -d "$gbin" ]]; then
-      case ":$PATH:" in
-        *":$gbin:"*) ;;
-        *) export PATH="$gbin:$PATH" ;;
-      esac
+    local gprefix gbin
+    gprefix="$(npm config get prefix 2>/dev/null || true)"
+    if [[ -n "$gprefix" && "$gprefix" != "undefined" && "$gprefix" != "null" ]]; then
+      gbin="$gprefix/bin"
+      if [[ -d "$gbin" ]]; then
+        case ":$PATH:" in
+          *":$gbin:"*) ;;
+          *) export PATH="$gbin:$PATH" ;;
+        esac
+      fi
     fi
+
+    # Common fallback locations
+    for d in "$HOME/.local/bin" "$HOME/.npm-global/bin" "/usr/local/bin"; do
+      if [[ -d "$d" ]]; then
+        case ":$PATH:" in
+          *":$d:"*) ;;
+          *) export PATH="$d:$PATH" ;;
+        esac
+      fi
+    done
+
+    hash -r 2>/dev/null || true
   }
 
   echo "[*] Installing ${spec} ..."
@@ -112,7 +127,8 @@ ensure_openclaw_cli(){
   if [[ $INSTALL_OPENCLAW_IF_MISSING -eq 1 ]]; then
     install_openclaw_cli
     if ! command -v openclaw >/dev/null 2>&1; then
-      echo "[!] npm global bin: $(npm bin -g 2>/dev/null || echo unknown)"
+      echo "[!] npm prefix: $(npm config get prefix 2>/dev/null || echo unknown)"
+      echo "[!] PATH: $PATH"
       die "openclaw install attempted but command still not found (PATH issue likely)"
     fi
     return 0
