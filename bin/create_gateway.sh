@@ -56,10 +56,14 @@ if [[ $FORCE -eq 0 ]]; then
   fi
 fi
 
-# 디렉토리 생성 + 소유권 정리
-if command -v sudo >/dev/null 2>&1; then
-  sudo mkdir -p "${BOTROOT}" "${CFGROOT}"
-  sudo chown -R "$USER:$USER" "${BOTROOT}"
+# 디렉토리 생성 (sudo 자동 사용 안 함)
+# 정책: 스크립트는 일반 사용자 권한으로만 실행.
+# 권한이 없으면 사전 chown/chmod를 안내하고 종료.
+PARENT_DIR="$(dirname "${BOTROOT}")"
+mkdir -p "${PARENT_DIR}" || die "cannot create parent dir: ${PARENT_DIR}"
+
+if [[ ! -w "${PARENT_DIR}" ]]; then
+  die "no write permission on ${PARENT_DIR}.\nRun once as admin: sudo mkdir -p '${ROOT}' && sudo chown -R '$USER:$USER' '${ROOT}'"
 fi
 
 ensure_dirs \

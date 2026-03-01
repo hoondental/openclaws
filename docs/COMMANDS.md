@@ -59,6 +59,9 @@ Examples:
 ### `create_gateway.sh`
 Creates/updates one gateway instance runtime folder and `gateway.env`.
 
+> Run as normal user (do **not** run whole script with `sudo`).
+> If target root is not writable, fix permissions once with `sudo chown`, then rerun.
+
 Main actions:
 - validates required args (`--name`, `--ws-port`)
 - creates runtime dirs (`logs`, `run`, `config`, `state`, `.openclaw/workspace`)
@@ -73,6 +76,8 @@ Example:
 
 ### `create_node.sh`
 Creates/updates one node instance linked to a gateway.
+
+> Run as normal user (do **not** run whole script with `sudo`).
 
 Main actions:
 - reads gateway port/config path from gateway's `gateway.env`
