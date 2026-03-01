@@ -2,6 +2,9 @@
 
 이 문서는 OpenClaw Gateway를 `openai-codex` 계열 모델(예: `openai-codex/gpt-5.3-codex`)과 연결하는 방법을 정리합니다.
 
+> 핵심: ChatGPT 앱/웹에서 네가 쓰는 모델 버전(예: GPT-5.2)과, Gateway에서 지정하는 Codex 모델 버전은 **서로 독립**입니다.
+> 즉, ChatGPT가 5.2여도 Gateway는 5.3-codex를 써도 되고, 반대로 맞춰도 됩니다.
+
 ---
 
 ## 1) 대상 설정 파일 위치
@@ -16,30 +19,19 @@ Gateway 인스턴스별 설정 파일:
 
 ---
 
-## 2) 모델 지정
+## 2) 최종 예제 `openclaw.json` (권장 형태)
 
-`openclaw.json`에서 기본 모델을 지정합니다.
+아래는 `gateway + auth + agents.defaults.model` 구조를 한 번에 보여주는 예제입니다.
 
 ```json
 {
-  "agents": {
-    "defaults": {
-      "model": {
-        "primary": "openai-codex/gpt-5.3-codex"
-      }
+  "gateway": {
+    "mode": "local",
+    "auth": {
+      "mode": "token",
+      "token": "<GATEWAY_TOKEN>"
     }
-  }
-}
-```
-
----
-
-## 3) 인증 프로필 지정
-
-`auth.profiles`에 provider 프로필을 명시합니다.
-
-```json
-{
+  },
   "auth": {
     "profiles": {
       "openai-codex:default": {
@@ -47,12 +39,51 @@ Gateway 인스턴스별 설정 파일:
         "mode": "oauth"
       }
     }
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "/home/dhlee/openclaws/gateways/gw_chatgpt/.openclaw/workspace",
+      "model": {
+        "primary": "openai-codex/gpt-5.3-codex"
+      },
+      "compaction": {
+        "mode": "safeguard"
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "<TELEGRAM_BOT_TOKEN>"
+    }
   }
 }
 ```
 
-> 이미 `create_gateway.sh --model openai-codex/gpt-5.3-codex`로 생성했다면,
-> 위 프로필 껍데기가 자동 생성될 수 있습니다.
+### 필드 설명
+- `gateway.auth.token`: Gateway 접속 토큰(내부 통신용)
+- `auth.profiles["openai-codex:default"]`: OpenAI Codex 인증 프로필
+- `agents.defaults.model.primary`: 기본 모델 선택
+- `agents.defaults.workspace`: 기본 작업 폴더
+- `channels.telegram.botToken`: Telegram 봇 토큰(텔레그램 사용 시)
+
+> `gateway.auth.token`, `botToken`은 절대 외부 공개/커밋하지 마세요.
+
+---
+
+## 3) 모델 버전 선택 (5.2 vs 5.3-codex)
+
+- ChatGPT 앱/웹에서 쓰는 모델 버전과 Gateway 모델은 **강제 연동되지 않음**
+- Gateway에서 원하는 모델 문자열만 정확히 지정하면 됨
+
+예시:
+- `openai-codex/gpt-5.3-codex`
+- (환경에 따라) `openai-codex/gpt-5.2-codex` 같은 문자열이 존재하면 사용 가능
+
+권장:
+1. 먼저 안정적인 기본값(현재 문서 예시) 사용
+2. 필요하면 테스트 VM에서 다른 모델 문자열 검증
+3. 운영 반영
 
 ---
 
